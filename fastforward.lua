@@ -4,13 +4,12 @@
 --
 -- This script allows you to tap or hold the RIGHT key to speed up video,
 -- the faster you tap RIGHT the faster the video will play.  After 2.5
--- seconds the playback speed will begin to decay back to 1x speed.
+-- seconds the playback speed will begin to decay back to the original speed.
 local decay_delay = .05 -- rate of time by which playback speed is decreased
-local speed_increments = .2 -- amount by which playback speed is increased each time
+local speed_increments = .75 -- amount by which playback speed is increased each time
 local speed_decrements = .4 -- amount by which playback speed is decreased each time
 local max_rate = 5 -- will not exceed this rate
 local inertial_decay = false -- changes the behavior of speed decay
-
 
 -----------------------
 local mp = require 'mp'
@@ -22,14 +21,20 @@ local function inc_speed()
         auto_dec_timer:kill()
     end
 
-    local new_speed = mp.get_property("speed") + speed_increments
+    local current_speed = mp.get_property("speed")
+    if original_speed == nil then
+        -- Save the original speed if it's not saved yet
+        original_speed = current_speed
+    end
+
+    local new_speed = current_speed + speed_increments
 
     if new_speed > max_rate - speed_increments then
         new_speed = max_rate
     end
 
     mp.set_property("speed", new_speed)
-    mp.osd_message(("▶▶ x%.1f"):format(new_speed), osd_duration)
+    mp.osd_message(("▶▶ x%.2f"):format(new_speed), osd_duration)
 end
 
 local function auto_dec_speed()
@@ -38,12 +43,12 @@ end
 
 function dec_speed()
     local new_speed = mp.get_property("speed") - speed_decrements
-    if new_speed < 1 + speed_decrements then
-        new_speed = 1
+    if new_speed < original_speed + speed_decrements then
+        new_speed = original_speed
         if auto_dec_timer ~= nil then auto_dec_timer:kill() end
     end
     mp.set_property("speed", new_speed)
-    mp.osd_message(("▶▶ x%.1f"):format(new_speed), osd_duration)
+    mp.osd_message(("▶▶ x%.2f"):format(new_speed), osd_duration)
 end
 
 local function fastforward_handle(table)
