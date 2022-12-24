@@ -6,9 +6,9 @@
 -- the faster you tap RIGHT the faster the video will play.  After 2.5
 -- seconds the playback speed will begin to decay back to the original speed.
 local decay_delay = .05 -- rate of time by which playback speed is decreased
-local speed_increments = .75 -- amount by which playback speed is increased each time
+local speed_increments = .25 -- amount by which playback speed is increased each time
 local speed_decrements = .4 -- amount by which playback speed is decreased each time
-local max_rate = 5 -- will not exceed this rate
+local max_rate = 4.75 -- will not exceed this rate
 local inertial_decay = false -- changes the behavior of speed decay
 
 -----------------------
